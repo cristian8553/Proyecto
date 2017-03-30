@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h1>Ejemplo de XPath</h1>
+<p><input id="txtXpath" type="text" value='/catalogo/pelicula[duracion="Cortometraje"]/nombre[text()]' style="width: 600px;"><button onclick="Ejecuta();">Ejecuta</button></p>
+<h2>Resultado:</h2>
+<p id="demo"></p>
+
+
+<script>
+
+    function Ejecuta() {
+        //Se crea un nuevo objeto XMLHttpRequest, para cargar documentos XML en el navegador
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) { //Estado 4=Completed y status 200=Exitoso
+                showResult(xhttp.responseXML);
+            }
+        };
+        xhttp.open("GET", "catalogoPelis.xml", true); //seleccionamos el documento xml
+        xhttp.send(); 
+
+        function showResult(xml) {
+            var txt = "";
+            var path = document.getElementById("txtXpath").value; //Se selecciona la consulta ingresada
+            document.getElementById("demo").innerText = "";
+            //path = '/catalogo/pelicula[duracion="Cortometraje"]/nombre[text()]';
+            //alert("Se ejecutara la consulta: \n\n" + path + "\n\nPresione ACEPTAR para continuar...");
+
+            /*for(var o in xml){
+                    console.log(o);
+                }*/
+
+            if (xml.evaluate) {
+                var nodes = xml.evaluate(path, xml, null, XPathResult.ANY_TYPE, null); //Función a través de la cual Chrome, Firefox, Edge, Opera, y Safari evaluan xPath
+                result = nodes.iterateNext();
+                /*for(var o in result){
+                    console.log(o);
+                }
+                console.log(result.attributes);*/
+                
+                                
+                while (result) {
+                    if(result.value){
+                        //txt += result.name + "=" + result.value + "\n";
+                    }
+                    else if(result.innerHTML){
+                        txt += result.innerHTML + "\n";
+                    }
+                    else if(result.tagName){
+                        /*txt += "<" + result.tagName;
+                        for (i = 0; i < result.attributes.length; i++) {
+                            txt += ' ' + result.attributes[i].nodeName + '=' + result.attributes[i].nodeValue + '"';
+                        }
+                        txt += ">";*/
+                        txt += result.tagName + "\n";
+                        //txt += "</" + result.tagName + ">" + "\n\n";
+                    }
+                    result = nodes.iterateNext();
+                }
+                //console.log(txt)
+            // Código para Internet Explorer
+            } else if (window.ActiveXObject || xhttp.responseType == "msxml-document") {
+                xml.setProperty("SelectionLanguage", "XPath");
+                nodes = xml.selectNodes(path);
+                for (i = 0; i < nodes.length; i++) {
+                    txt += nodes[i].childNodes[0].nodeValue + "<br>";
+                }
+            }
+            document.getElementById("demo").innerText = txt;
+        }
+    }
+</script>
+
+</body>
+</html>

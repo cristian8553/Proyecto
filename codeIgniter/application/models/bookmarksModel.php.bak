@@ -1,0 +1,54 @@
+<?php if (! defined ('BASEPATH')) exit("No direct scrip access allowed");
+class bookmarksModel extends  CI_Model{
+	function __construct(){
+		parent:: __construct();
+	}
+	
+	function guardar ($data){
+		$this->db->insert('codeigniter',$data);
+	}
+	
+	function verTodo(){
+		$query=$this->db->get('codeigniter');
+		if($query -> num_rows()>0){
+			return $query;
+		}else{
+			return false;
+		
+		}
+	}
+	
+	function eliminar($id){
+		$this->db->where('id',$id);
+		$this->db->delete('codeigniter');
+		//redirect('/codeIgniter/index.php/main/ver');
+		header('Location: /codeIgniter/index.php/main/ver');
+	}
+
+	function buscar($query){
+		$this->db->like('titulo',$query);
+		$query = $this->db->get('codeigniter');
+		if($query->num_rows()>0){
+			return $query;
+		}else{
+			return false;
+		}
+	}
+	
+	function obtenerEnlace($id){
+		$this->db->where('id',$id);
+		$query=$this->db->get('codeigniter');
+		if($query->num_rows()>0){
+			return $query;
+		}else{
+			return false;
+		}
+	}
+
+	function editarEnlace($id,$data){
+		$this->db->where('id',$id);
+		$this->db->update('codeigniter',$data);
+	}
+	
+	
+}
